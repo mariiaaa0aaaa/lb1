@@ -2,9 +2,10 @@ import requests
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 from datetime import datetime
+import matplotlib.dates as mdates  # Додаємо модуль для роботи з датами
 
 
-# Функція для отримання курсу валют за період
+# отримання курсу валют за тиждень
 def get_currency_rates_for_week():
     url = 'https://bank.gov.ua/NBU_Exchange/exchange_site?start=20240930&end=20241006&valcode=usd&sort=exchangedate&order=asc'
     response = requests.get(url)
@@ -23,10 +24,10 @@ def get_currency_rates_for_week():
 
             return dates, rates
         except ET.ParseError:
-            print(f"Could not parse XML response. Response text: {response.text}")
+            print(f"Не вдалося розібрати XML-відповідь. Текст відповіді: {response.text}")
             return None, None
     else:
-        print(f"Error: Received status code {response.status_code}.")
+        print(f"Помилка: Отримано код статусу {response.status_code}.")
         return None, None
 
 
@@ -35,34 +36,35 @@ def print_currency_rates():
     dates, rates = get_currency_rates_for_week()
 
     if dates and rates:
-        print("Currency rates for USD from 30.09.2024 to 06.10.2024:")
+        print("Курси валют для USD від 30.09.2024 до 06.10.2024:")
         for date, rate in zip(dates, rates):
-            print(f"Date: {date.strftime('%d.%m.%Y')}, Rate: {rate}")
+            print(f"Дата: {date.strftime('%d.%m.%Y')}, Курс: {rate}")
 
 
-# Побудувати графік зміни курсу валюти
+# графік зміни курсу
 def plot_currency_rate():
     dates, rates = get_currency_rates_for_week()
 
     if dates and rates:
         plt.figure(figsize=(10, 5))
-        plt.plot(dates, rates, marker='o', label='USD Rate')
+        plt.plot(dates, rates, marker='o', label='Курс долара США')
 
-        # Додаємо цифрові показники курсів на графік
+        # цифрові показники курсів на графік
         for i, txt in enumerate(rates):
             plt.annotate(f'{txt:.4f}', (dates[i], rates[i]), textcoords="offset points", xytext=(0, 5), ha='center')
 
-        plt.title('USD Exchange Rate (30.09.2024 - 06.10.2024)')
-        plt.xlabel('Date')
-        plt.ylabel('Rate (UAH)')
+        plt.title('Курс долара США (30.09.2024 - 06.10.2024)')
+        plt.xlabel('Дата')
+        plt.ylabel('Курс (UAH)')
         plt.grid(True)
-        plt.ylim(41.150, 41.4)  # Шкала для більш детального відображення
+        plt.ylim(41.150, 41.4)  # зміна вигляду шкали по ігріку
+
+        # вигляд дат на осі ікс
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m.%Y'))
         plt.xticks(rotation=45)
         plt.legend()
         plt.tight_layout()
         plt.show()
 
-
-# Виклик функції для виведення на консоль і побудови графіка
-print_currency_rates()  # Виведення курсу на консоль
-plot_currency_rate()  # Побудова графіка
+print_currency_rates()  # виведення курсу на консоль
+plot_currency_rate()  # побудова графіка
