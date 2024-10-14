@@ -3,14 +3,14 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 
-# налаштування логування
+# Налаштування логування
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# глобальні змінні для відстеження режиму "scream" і стану бота
+# Глобальні змінні для відстеження режиму "scream" і стану бота
 screaming = False
-bot_active = True  # флаг для перевірки, чи активний бот
+bot_active = True  # Флаг для перевірки, чи активний бот
 
 # Текст для меню
 FIRST_MENU = "<b>Меню 1</b>\n\nОберіть режим."
@@ -40,20 +40,20 @@ SECOND_MENU_MARKUP = InlineKeyboardMarkup([
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Функція для обробки текстових повідомлень."""
-    if not bot_active:  # якщо бот неактивний, нічого не робимо
+    if not bot_active:  # Якщо бот неактивний, нічого не робимо
         return
 
     print(f'{update.message.from_user.first_name} wrote {update.message.text}')
     if screaming and update.message.text:
         await context.bot.send_message(
             chat_id=update.message.chat.id,
-            text=update.message.text.upper(),  # перетворює текст на великі літери
+            text=update.message.text.upper(),  # Перетворює текст на великі літери
             entities=update.message.entities
         )
     elif not screaming and update.message.text:
         await context.bot.send_message(
             chat_id=update.message.chat.id,
-            text=update.message.text.lower(),  # перетворює текст на маленькі літери
+            text=update.message.text.lower(),  # Перетворює текст на маленькі літери
             entities=update.message.entities
         )
 
@@ -79,15 +79,15 @@ async def button_tap(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         screaming = False
         await query.answer("Режим капсу вимкнено!")
     elif data == STOP_BUTTON:
-        bot_active = False  # вимикаємо обробку повідомлень
+        bot_active = False  # Вимикаємо обробку повідомлень
         await query.answer("Бот зупиняється...")
         await context.bot.send_message(chat_id=query.message.chat.id, text="Бот зупинений.")
     elif data == START_BUTTON:
-        bot_active = True  # увімкнення обробки повідомлень
+        bot_active = True  # Увімкнення обробки повідомлень
         await query.answer("Бот запущено!")
         await context.bot.send_message(chat_id=query.message.chat.id, text="Бот знову активний.")
 
-    # оновлення тексту в меню
+    # Оновлення тексту в меню
     await update_menu_text(query)
 
     if data == NEXT_BUTTON:
@@ -111,7 +111,7 @@ async def update_menu_text(query):
     else:
         status_text += "\nРежим капсу вимкнено!"
 
-    # оновлення тексту меню
+    # Оновлення тексту меню
     await query.message.edit_text(
         text=f"<b>Меню</b>\n{status_text}\n\n" + FIRST_MENU,
         parse_mode=ParseMode.HTML,
@@ -123,7 +123,7 @@ async def scream(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global screaming
     screaming = True
     await context.bot.send_message(
-        chat_id=update.message.chat.id,  # відправка повідомлення в групу про стан капсу
+        chat_id=update.message.chat.id,  # Відправка повідомлення в групу про стан капсу
         text="Режим капсу увімкнено!"
     )
     await update_menu_text(update)
@@ -133,27 +133,30 @@ async def whisper(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global screaming
     screaming = False
     await context.bot.send_message(
-        chat_id=update.message.chat.id,  # відправка повідомлення в групу про стан капсу
+        chat_id=update.message.chat.id,  # Відправка повідомлення в групу про стан капсу
         text="Режим капсу вимкнено!"
     )
     await update_menu_text(update)
 
 def main() -> None:
     """Основна функція для запуску бота."""
-    application = Application.builder().token("7622195214:AAEP5tj2jbZpEI7_9Sm_CWtELd6sz65b43Y").build()
+    # Запит токену бота у користувача
+    bot_token = input("Введіть токен бота: ")
 
-    # реєстрація команд
+    application = Application.builder().token(bot_token).build()
+
+    # Реєстрація команд
     application.add_handler(CommandHandler("menu", menu))
     application.add_handler(CommandHandler("scream", scream))
     application.add_handler(CommandHandler("whisper", whisper))
 
-    # обробка натискань кнопок
+    # Обробка натискань кнопок
     application.add_handler(CallbackQueryHandler(button_tap))
 
-    # обробка будь-яких текстових повідомлень
+    # Обробка будь-яких текстових повідомлень
     application.add_handler(MessageHandler(~filters.COMMAND, echo))
 
-    # запуск бота
+    # Запуск бота
     application.run_polling()
 
 if __name__ == '__main__':
