@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import matplotlib.dates as mdates  # Додаємо модуль для роботи з датами
 
-
+print(f"----------- Завдання 1- 3 -----------")
 # отримання курсу валют за тиждень
 def get_currency_rates_for_week():
     url = 'https://bank.gov.ua/NBU_Exchange/exchange_site?start=20240930&end=20241006&valcode=usd&sort=exchangedate&order=asc'
