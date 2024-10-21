@@ -119,7 +119,7 @@ async def update_menu_text(query):
     )
 
 async def scream(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Функція для команди /scream."""
+    """Функція для команди /scream"""
     global screaming
     screaming = True
     await context.bot.send_message(
@@ -139,7 +139,7 @@ async def whisper(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update_menu_text(update)
 
 def main() -> None:
-    """Основна функція для запуску бота."""
+    """Основна функція для запуску бота"""
     # Запит токену бота у користувача
     bot_token = input("Введіть токен бота: ")
 

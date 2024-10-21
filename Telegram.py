@@ -2,7 +2,7 @@ import os
 import asyncio
 from telethon import TelegramClient
 
-# запит у користувача API ID, API Hash, токен бота та ID групи
+# запит у користувача API ID, API Hash, токен бота та ID групи в командному
 api_id = input("Введіть ваш API ID: ")
 api_hash = input("Введіть ваш API Hash: ")
 bot_token = input("Введіть токен вашого бота: ")
